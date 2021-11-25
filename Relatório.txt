@@ -1,0 +1,38 @@
+NOME:
+	netifstat
+
+SINOPSE:	
+	./netifstat.sh [-c interfaces] [-p n_interfaces] [-b|-k|-m] [-t|-r|-T|-R] [-v] [-l] [T]
+
+DESCRIÇÃO:
+	Permite visualizar a quantidade de dados transmitidos e recebidos nas interfaces
+	de rede selecionadas e as respetivas taxas de transferência para períodos de 
+	tempo pré-estabelecidos.
+	Ordenação por defeito: nome da interface, alfabeticamente.
+
+OBRIGATÓRIO:
+	T  (segundos) : o período entre recolhas de dados.
+	
+OPCIONAL:
+	-c [regex]		: seleção das interfaces de rede a visualizar.
+	
+	-p [inteiro]	: número de interfaces a visualizar
+	
+	-b 				: visualizar os dados em bytes
+	-k 				: visualizar os dados em kilobytes
+	-m 				: visualizar os dados em megabytes
+	
+	-t 				: ordenar por TX crescente
+	-r 				: ordenar por RX crescente
+	-T 				: ordenar por TRATE crescente
+	-R 				: ordenar por RRATE crescente
+	
+	-v 				: inverter ordenação
+	
+	-l				: funciona em loop. A tabela terá duas colunas extra que mostram
+					  o total de dados recebidos e transmitidos desde o início da
+					  execução do script.
+						
+ABORDAGEM UTILIZADA:
+
+TESTES REALIZADOS:
