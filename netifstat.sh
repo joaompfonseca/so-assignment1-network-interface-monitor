@@ -15,9 +15,10 @@ function get_args() {
 function get_data() {
 
     # Guarda output do comando ifconfig (WIP)
-    data=$(ifconfig | grep ": " | join)
+    data=$(ifconfig)
 
-    echo $data 
+    names=$($data | grep ": ")
+    echo $names
 }
 
 # Imprime a tabela com os dados
