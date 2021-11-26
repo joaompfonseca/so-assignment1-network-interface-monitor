@@ -4,7 +4,7 @@
 #               FUNCOES                #
 # ------------------------------------ #
 
-# Determina as opções fornecidas
+# Determina as opções fornecidas sim
 function get_args() {
 
     # Por agora, a unica opcao considerada e [T]
