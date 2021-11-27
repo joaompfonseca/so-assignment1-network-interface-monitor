@@ -17,7 +17,7 @@ function get_data() {
     # Guarda output do comando ifconfig (WIP)
     data=$(ifconfig)
 
-    names=$($data | grep ": ")
+    names=$($data)
     echo $names
 }
 
