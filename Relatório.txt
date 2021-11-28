@@ -33,7 +33,7 @@ OPCIONAL:
 					  		      o total de dados recebidos e transmitidos desde o início da
 					  			  execução do script.
 						
-RELATÓRIO DA ABORDAGEM UTILIZADA, PROGRAMAÇÃO DO CÓDIGO E TESTAGEM DO SCRIPT:
+RELATÓRIO DA ABORDAGEM UTILIZADA, ESCRITA DO CÓDIGO E TESTAGEM DO SCRIPT:
 
 1. Organização e estrutura do script
 
@@ -64,7 +64,7 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 (exceto s, o período entre recolha de dados):
 
 		  Opção	: Nome da Var.	: Tipo           : Características
-		  ------:---------------:----------------:---------------------------------------------------------
+		  ------:---------------:----------------:-------------------------------------------------------
 		> s 	: time			: float	 		 : obrigatório; número inteiro ou decimal; maior que zero
 		> c 	: if_filter		: string (regex) : comprimento maior que zero
 		> p     : if_nMax		: integer		 : número inteiro; maior que zero
@@ -78,12 +78,12 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 		> v		: sRev			: boolean		 : 
 		> l		: loop			: boolean		 : 
 
-		Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
+	Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
 
 	Para os arrays que armazenam os dados recolhidos do comando "ifconfig", foram definidos os seguintes nomes:
 	
 		  Nome do Array	: Tipo           : Descrição
-		  --------------:----------------:---------------------------------------------------------
+		  --------------:----------------:-------------------------------------
 		> if_names		: string[]	 	 : Nomes das interfaces
 		> if_TX			: int[]	 	 	 : TXs das interfaces, em bytes
 		> if_RX			: int[]	 	 	 : RXs das interfaces, em bytes 
@@ -91,3 +91,47 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 		> if_RR 		: float[]	 	 : RRs das interfaces, em bytes/segundo 
 		> if_TXTOT 		: int[]	 	 	 : TXs totais das interfaces, em bytes 
 		> if_RXTOT 		: int[]	 	 	 : RXs totais das interfaces, em bytes
+
+	Para determinar a diferença de valores entre recolhas de dados, é preciso guardar os dados de cada recolha em
+dois arrays auxiliares. Os nomes desses arrays têm um sufixo sugestivo, indicando se se trata da recolha anterior
+ou da recolha atual:
+
+		  Sufixo	: Descrição		    : Exemplos concretos
+		  ----------:-------------------:-----------------------
+		> prev		: recolha anterior  : if_TX_prev, if_RX_prev
+		> curr		: recolha atual		: if_TX_curr, if_RX_curr
+
+	Os arrays if_TX e if_RX necessitam destes arrays auxiliares, pois guardam a diferença de valores desses dois.
+		
+ 3. Funções e testes
+
+ 3.1. print_table()
+	
+	Esta foi a primeira função a ser desenvolvida. Para a testar, os arrays foram predefinidos com os dados que constavam
+do enunciado, e foi definida a variável "loop":
+
+		if_names=("eth0" "wlan" "lo")
+		if_TX=(123456 3223 456)
+		if_RX=(23456 904 234)
+		if_TR=(12345.6 322.3 45.6)
+		if_RR=(2345.6 23.4 90.4)
+		if_TXTOT=(123456 3223 456)
+		if_RXTOT=(23456 904 234)	
+
+		loop=1
+
+	A função é invocada sem argumentos.
+
+	Vale a pena referir que, dentro da função, foi utilizado um pequeno truque para sucintamente imprimir ou não os dados
+necessários no caso de o script ser invocado em loop:
+
+		# Cabeçalho
+		[[ $loop -eq 1 ]] && printf " $header_loop" "TXTOT" "RXTOT"
+
+		# Linha
+		[[ $loop -eq 1 ]] && printf " $line_loop" ${if_TXTOT[i]} ${if_RXTOT[i]}
+
+	Numa expressão booleana [arg1] && [arg2], se arg1 for true (1), então arg2 será avaliada. No entanto, se arg1 for
+false (0), então arg2 não será avaliada, pois arg1 já é falsa.
+			
+3.2. sort_data()
