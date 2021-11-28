@@ -2,7 +2,7 @@ NOME:
 	netifstat
 
 SINOPSE:	
-	./netifstat.sh [-c interfaces] [-p n_interfaces] [-b|-k|-m] [-t|-r|-T|-R] [-v] [-l] [T]
+	./netifstat.sh [-c interfaces] [-p n_interfaces] [-b|-k|-m] [-t|-r|-T|-R] [-v] [-l] [segundos]
 
 DESCRIÇÃO:
 	Permite visualizar a quantidade de dados transmitidos e recebidos nas interfaces
@@ -11,28 +11,83 @@ DESCRIÇÃO:
 	Ordenação por defeito: nome da interface, alfabeticamente.
 
 OBRIGATÓRIO:
-	T  (segundos) : o período entre recolhas de dados.
+	segundos [inteiro/float] 	: o período entre recolhas de dados.
 	
 OPCIONAL:
-	-c [regex]		: seleção das interfaces de rede a visualizar.
+	-c [regex]					: seleção das interfaces de rede a visualizar.
 	
-	-p [inteiro]	: número de interfaces a visualizar
+	-p [inteiro]				: número de interfaces a visualizar
 	
-	-b 				: visualizar os dados em bytes
-	-k 				: visualizar os dados em kilobytes
-	-m 				: visualizar os dados em megabytes
+	-b 							: visualizar os dados em bytes
+	-k 							: visualizar os dados em kilobytes
+	-m 							: visualizar os dados em megabytes
 	
-	-t 				: ordenar por TX crescente
-	-r 				: ordenar por RX crescente
-	-T 				: ordenar por TRATE crescente
-	-R 				: ordenar por RRATE crescente
+	-t 							: ordenar por TX crescente
+	-r 							: ordenar por RX crescente
+	-T 							: ordenar por TRATE crescente
+	-R 							: ordenar por RRATE crescente
 	
-	-v 				: inverter ordenação
+	-v 							: inverter ordenação
 	
-	-l				: funciona em loop. A tabela terá duas colunas extra que mostram
-					  o total de dados recebidos e transmitidos desde o início da
-					  execução do script.
+	-l							: funciona em loop. A tabela terá duas colunas extra que mostram
+					  		      o total de dados recebidos e transmitidos desde o início da
+					  			  execução do script.
 						
-ABORDAGEM UTILIZADA:
+RELATÓRIO DA ABORDAGEM UTILIZADA, PROGRAMAÇÃO DO CÓDIGO E TESTAGEM DO SCRIPT:
 
-TESTES REALIZADOS:
+1. Organização e estrutura do script
+
+	Antes mesmo de começar a escrever código, discutiu-se a estratégia a adotar na resolução do problema
+proposto. Após analisar o que era pedido no enunciado, decidiu-se adotar a técnica de "dividir e conquistar",
+que consiste na divisão do problema principal em outros mais pequenos e fáceis de resolver.
+
+		> Problema principal - o script "netifstat.sh";
+		> Problemas secundários - as funções criadas no script, que resolvem tarefas específicas.
+
+	Portanto, este script está divido em duas partes, de forma a facilitar a leitura do mesmo:
+
+		> Zona das Funções - onde estão declaradas as funções.
+		> Zona do Main  - onde são chamadas as funções, de acordo com a lógica implementada.
+
+	As funções criadas para a resolução deste problema são as seguintes: 
+
+		> get_args() - Valida, determina e guarda em variáveis as opções e argumentos passados ao script;
+		> get_data() - Recolhe e guarda em arrays os dados obtidos através do comando "ifconfig";
+		> sort_data() - Ordena os dados nos arrays de acordo com a ordenação escolhida;
+		> print_table() - Imprime na consola a tabela formatada com os dados nos arrays.
+
+2. Nomes e tipos de dados das variáveis
+
+	Apesar de não haverem tipos de dados em bash, por uma questão de organização foram atribuidos a cada variável.
+
+	Para os argumentos fornecidos ao script (descritos acima), os nomes das variáveis são iguais ao nome da opção 
+(exceto s, o período entre recolha de dados):
+
+		  Opção	: Nome da Var.	: Tipo           : Características
+		  ------:---------------:----------------:---------------------------------------------------------
+		> s 	: time			: float	 		 : obrigatório; número inteiro ou decimal; maior que zero
+		> c 	: if_filter		: string (regex) : comprimento maior que zero
+		> p     : if_nMax		: integer		 : número inteiro; maior que zero
+		> b 	: b				: boolean		 :  \
+		> k 	: kb			: boolean		 :  | são incompatíveis
+		> m 	: mb			: boolean		 :  /
+		> t 	: sTX			: boolean		 :  \
+	    > r 	: sRX			: boolean		 :  | são incompatíveis
+		> T 	: sTR			: boolean		 :  |
+	    > R		: sRR			: boolean		 :  /
+		> v		: sRev			: boolean		 : 
+		> l		: loop			: boolean		 : 
+
+		Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
+
+	Para os arrays que armazenam os dados recolhidos do comando "ifconfig", foram definidos os seguintes nomes:
+	
+		  Nome do Array	: Tipo           : Descrição
+		  --------------:----------------:---------------------------------------------------------
+		> if_names		: string[]	 	 : Nomes das interfaces
+		> if_TX			: int[]	 	 	 : TXs das interfaces, em bytes
+		> if_RX			: int[]	 	 	 : RXs das interfaces, em bytes 
+		> if_TR 		: float[]	 	 : TRs das interfaces, em bytes/segundo
+		> if_RR 		: float[]	 	 : RRs das interfaces, em bytes/segundo 
+		> if_TXTOT 		: int[]	 	 	 : TXs totais das interfaces, em bytes 
+		> if_RXTOT 		: int[]	 	 	 : RXs totais das interfaces, em bytes
