@@ -120,8 +120,6 @@ do enunciado, e foi definida a variável "loop":
 
 		loop=1
 
-	A função é invocada sem argumentos.
-
 	Vale a pena referir que, dentro da função, foi utilizado um pequeno truque para sucintamente imprimir ou não os dados
 necessários no caso de o script ser invocado em loop:
 
@@ -135,3 +133,21 @@ necessários no caso de o script ser invocado em loop:
 false (0), então arg2 não será avaliada, pois arg1 já é falsa.
 			
 3.2. sort_data()
+
+	Para testar esta função, foram definidas as variáveis que alteram a ordenação ("sTX", "sRX", "sTR", "sRR", "sRev"),
+considerando desde já que variáveis incompatíveis não podem ser true (1) ao mesmo tempo. Os seus valores foram mudados
+consoante o tipo de ordenação, e os resultados foram verificados recorrendo à função print_table() definida anteriormente.
+
+	A ordenação tira partido do facto dos dados de cada interface "i" estarem guardados no índice "i" de cada array. Após
+escolher que dados ordenar, foi possível extrair as novas posições dos índices após a ordenação. O array com esses índices
+foi determinado recorrendo a apenas uma linha de código:
+
+		indexes=($( printf "%s\n" "${sort_data[@]}" | nl -v0 | sort -$sort_type -k2 | cut -f1 ))
+
+	Com os índices dos dados ordenados da forma pretendida, aplicou-se essa nova ordem a todos os arrays de dados.
+Recorreu-se a arrays temporários para salvaguardar os dados desordenados, pois os arrays originais seriam modificados pela
+nova ordenação e alguns dos dados poderiam ser sobrescritos.
+
+
+
+
