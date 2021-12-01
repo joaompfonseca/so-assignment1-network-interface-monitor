@@ -54,7 +54,8 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 		> get_args() - Valida, determina e guarda em variáveis as opções e argumentos passados ao script;
 		> get_data() - Recolhe e guarda em arrays os dados obtidos através do comando "ifconfig";
 		> sort_data() - Ordena os dados nos arrays de acordo com a ordenação escolhida;
-		> print_table() - Imprime na consola a tabela formatada com os dados nos arrays.
+		> print_table() - Imprime na consola a tabela formatada com os dados nos arrays;
+		> throw_error() - Termina o programa com erro, imprime a causa na consola e retorna o valor de saída correspondente.
 
 2. Nomes e tipos de dados das variáveis
 
@@ -63,20 +64,20 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 	Para os argumentos fornecidos ao script (descritos acima), os nomes das variáveis são iguais ao nome da opção 
 (exceto s, o período entre recolha de dados):
 
-		  Opção	: Nome da Var.	: Tipo           : Características
+		  Opção	: Nome da var.	: Tipo           : Valor por defeito	: Características
 		  ------:---------------:----------------:-------------------------------------------------------
-		> s 	: time			: float	 		 : obrigatório; número inteiro ou decimal; maior que zero
-		> c 	: if_filter		: string (regex) : comprimento maior que zero
-		> p     : if_nMax		: integer		 : número inteiro; maior que zero
-		> b 	: b				: boolean		 :  \
-		> k 	: kb			: boolean		 :  | são incompatíveis
-		> m 	: mb			: boolean		 :  /
-		> t 	: sTX			: boolean		 :  \
-	    > r 	: sRX			: boolean		 :  | são incompatíveis
-		> T 	: sTR			: boolean		 :  |
-	    > R		: sRR			: boolean		 :  /
-		> v		: sRev			: boolean		 : 
-		> l		: loop			: boolean		 : 
+		> s 	: time			: float	 		 : XXXXXXXXXXXXXXXXXXXX : obrigatório; número inteiro ou decimal; maior que zero
+		> c 	: if_filter		: string (regex) : .*					: comprimento maior que zero
+		> p     : if_nMax		: integer		 : ${#if_names}			: número inteiro; maior que zero
+		> b 	: b				: boolean		 : 1					:  \
+		> k 	: kb			: boolean		 : 0					:  | são incompatíveis
+		> m 	: mb			: boolean		 : 0					:  /
+		> t 	: sTX			: boolean		 : 0					:  \
+	    > r 	: sRX			: boolean		 : 0					:  | são incompatíveis
+		> T 	: sTR			: boolean		 : 0					:  |
+	    > R		: sRR			: boolean		 : 0					:  /
+		> v		: sRev			: boolean		 : 0					: 
+		> l		: loop			: boolean		 : 0					: 
 
 	Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
 
@@ -103,9 +104,9 @@ ou da recolha atual:
 
 	Os arrays if_TX e if_RX necessitam destes arrays auxiliares, pois guardam a diferença de valores desses dois.
 		
- 3. Funções e testes
+3. Funções e testes // REFAZER PELA ORDEM CORRETA
 
- 3.1. print_table()
+3.1. print_table()
 	
 	Esta foi a primeira função a ser desenvolvida. Para a testar, os arrays foram predefinidos com os dados que constavam
 do enunciado, e foi definida a variável "loop":
@@ -148,6 +149,10 @@ foi determinado recorrendo a apenas uma linha de código:
 Recorreu-se a arrays temporários para salvaguardar os dados desordenados, pois os arrays originais seriam modificados pela
 nova ordenação e alguns dos dados poderiam ser sobrescritos.
 
+3.5. throw_error()
 
-
+		  Tipo de erro 	: Gama de códigos	: Código	: Dado			: Causa
+		  --------------:-------------------:-----------:---------------:----------------------------------------------------------
+		> Argumentos 	: 		10-19		: 	 		:				:
+		> Execução 		: 		20-29		:  	 20		: "$if_filter"	: o filtro fornecido não encontrou nenhuma interface válida
 
