@@ -2,7 +2,7 @@ NOME:
 	netifstat
 
 SINOPSE:	
-	./netifstat.sh [-c interfaces] [-p n_interfaces] [-b|-k|-m] [-t|-r|-T|-R] [-v] [-l] [segundos]
+	./netifstat.sh [-c interfaces] [-p n_interfaces] [-b|-k|-m] [-t|-r|-T|-R] [-v] [-l] segundos
 
 DESCRIÇÃO:
 	Permite visualizar a quantidade de dados transmitidos e recebidos nas interfaces
@@ -51,7 +51,7 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 
 	As funções criadas para a resolução deste problema são as seguintes: 
 
-		> get_args() - Valida, determina e guarda em variáveis as opções e argumentos passados ao script;
+		> get_args() - Determina, valida e guarda em variáveis as opções e argumentos passados ao script;
 		> get_data() - Recolhe e guarda em arrays os dados obtidos através do comando "ifconfig";
 		> sort_data() - Ordena os dados nos arrays de acordo com a ordenação escolhida;
 		> print_table() - Imprime na consola a tabela formatada com os dados nos arrays;
@@ -61,25 +61,30 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 
 	Apesar de não haverem tipos de dados em bash, por uma questão de organização foram atribuidos a cada variável.
 
-	Para os argumentos fornecidos ao script (descritos acima), os nomes das variáveis são iguais ao nome da opção 
-(exceto s, o período entre recolha de dados):
+	Para os argumentos fornecidos ao script:
 
-		  Opção	: Nome da var.	: Tipo           : Valor por defeito	: Características
-		  ------:---------------:----------------:-------------------------------------------------------
-		> s 	: time			: float	 		 : XXXXXXXXXXXXXXXXXXXX : obrigatório; número inteiro ou decimal; maior que zero
-		> c 	: if_filter		: string (regex) : .*					: comprimento maior que zero
-		> p     : if_nMax		: integer		 : ${#if_names}			: número inteiro; maior que zero
-		> b 	: b				: boolean		 : 1					:  \
-		> k 	: kb			: boolean		 : 0					:  | são incompatíveis
-		> m 	: mb			: boolean		 : 0					:  /
-		> t 	: sTX			: boolean		 : 0					:  \
-	    > r 	: sRX			: boolean		 : 0					:  | são incompatíveis
-		> T 	: sTR			: boolean		 : 0					:  |
-	    > R		: sRR			: boolean		 : 0					:  /
-		> v		: sRev			: boolean		 : 0					: 
-		> l		: loop			: boolean		 : 0					: 
+		  Opção		: Nome da var.	: Tipo           : Valor por defeito	: Características
+		  ----------:---------------:----------------:----------------------:-------------------------------------------------------
+		> c 		: if_filter		: string (regex) : .*					: comprimento maior que zero
+		> p     	: if_nMax		: integer		 : todas				: número inteiro; maior que zero
+		> b 		: b				: boolean		 : 1					:  \
+		> k 		: kb			: boolean		 : 0					:  | são incompatíveis
+		> m 		: mb			: boolean		 : 0					:  /
+		> t 		: sTX			: boolean		 : 0					:  \
+	    > r 		: sRX			: boolean		 : 0					:  | são incompatíveis
+		> T 		: sTR			: boolean		 : 0					:  |
+	    > R			: sRR			: boolean		 : 0					:  /
+		> v			: sRev			: boolean		 : 0					: 
+		> l			: loop			: boolean		 : 0					:
+		> segundos	: time			: integer 		 : XXXXXXXXXXXXXXXXXXXX : obrigatório; número inteiro; maior que zero
 
 	Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
+
+	Variáveis de suporte:
+
+		  Nome da var.	: Tipo           : Valor	: Descrição
+		  --------------:----------------:----------:-----------------------------------------------
+		>  cycle		: integer		 : 0		: Conta o número de ciclos de execução do script
 
 	Para os arrays que armazenam os dados recolhidos do comando "ifconfig", foram definidos os seguintes nomes:
 	
@@ -93,16 +98,19 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 		> if_TXTOT 		: int[]	 	 	 : TXs totais das interfaces, em bytes 
 		> if_RXTOT 		: int[]	 	 	 : RXs totais das interfaces, em bytes
 
-	Para determinar a diferença de valores entre recolhas de dados, é preciso guardar os dados de cada recolha em
-dois arrays auxiliares. Os nomes desses arrays têm um sufixo sugestivo, indicando se se trata da recolha anterior
-ou da recolha atual:
+	Para determinar os valores pretendidos entre recolhas de dados, é preciso guardar os dados de cada recolha em
+arrays auxiliares. Os nomes desses arrays têm um sufixo sugestivo, indicando se se trata da recolha anterior ou
+da recolha atual:
 
 		  Sufixo	: Descrição		    : Exemplos concretos
 		  ----------:-------------------:-----------------------
 		> prev		: recolha anterior  : if_TX_prev, if_RX_prev
 		> curr		: recolha atual		: if_TX_curr, if_RX_curr
 
-	Os arrays if_TX e if_RX necessitam destes arrays auxiliares, pois guardam a diferença de valores desses dois.
+	São os valores em if_TX e if_RX que são guardados nestes arrays auxiliares. Com eles, podem ser calculados
+os arrays if_TX, if_RX, if_TR e if_RR (entre duas amostras), if_TXTOT e if_RXTOT (durante a execução do script).
+
+	// AINDA TEMOS OS CONV DA CONVERSÂO DE BYTES PARA KB E MB
 		
 3. Funções e testes // REFAZER PELA ORDEM CORRETA
 
@@ -132,6 +140,10 @@ necessários no caso de o script ser invocado em loop:
 
 	Numa expressão booleana [arg1] && [arg2], se arg1 for true (1), então arg2 será avaliada. No entanto, se arg1 for
 false (0), então arg2 não será avaliada, pois arg1 já é falsa.
+
+	Apenas os dados das interfaces que passam no filtro é que são impressas. Quando os dados são recolhidos na função
+get_data(), é garantido que pelo menos uma interface passa no filtro, caso contrário seria apenas impresso o cabeçalho
+da tabela.
 			
 3.2. sort_data()
 
