@@ -6,9 +6,86 @@
 
 # Determina, valida e guarda em variáveis as opções e argumentos passados ao script
 function get_args() {
+    
+    if ! [[ "${!#}" =~ ^[0-9]*.[0-9]*$ ]]; then
+        echo Definição do período temporal inválida! Tem que definir um tempo máximo.\(s\).
+        exit
+    else
+        echo A validar os argumentos...
 
-    # Por agora, a única opção considerada é "s"
-    s=$1
+        if_filter=.*
+        b=1
+        kb=0
+        mb=0
+        if_nMax=0
+        sTX=0
+        sRX=0
+        sTR=0
+        sRR=0
+        sRev=0
+        loop=0
+        while getopts "c:bkmp:trTRvl" option; do
+            case ${option} in
+            c) #For option c
+                if_filter=$OPTARG
+                ;;
+            b) #For option b
+                b=0
+                if [ ! -k ] | [ ! -m ]; then
+                    b=1
+                    exit 0
+                fi
+                ;;
+            k) #For option k
+                kb=1
+                if [ ! -m ]; then
+                    kb=0
+                    exit 0
+                fi
+                ;;
+            m) #For option m
+                mb=1
+                ;;
+            p) #For option p
+                if ! [[ "$OPTARG" =~ ^[1-9]+$ ]]; then
+                    echo "A opção -p deverá ser um inteiro maior que 0!"
+                    if_nMax=$OPTARG
+                    exit 0
+                fi
+                ;;
+            t) #For option t
+                sTX=1
+                if ! [ -r ] | [ ! -T ] | [ ! -R ]; then
+                    sTX=0
+                    exit 0
+
+                fi
+                ;;
+            r) #For option r
+                sRX=1
+                if [ ! -T ] | [ ! -R ]; then
+                    sRX=0
+                    exit 0
+                fi
+                ;;
+            T) #For option T
+                sTR=1
+                if [ ! -R ]; then
+                    sTR=0
+                    exit 0
+                fi
+                ;;
+            R) #For option R
+                sRR=1 ;;
+            v) #For option v
+                sRev=1 ;;
+            l) #For option l
+                loop=1 ;;
+            esac
+        done
+
+    fi
+
 }
 
 # Recolhe e guarda em arrays os dados obtidos através do comando "ifconfig"
