@@ -6,86 +6,91 @@
 
 # Determina, valida e guarda em variáveis as opções e argumentos passados ao script
 function get_args() {
-    
-    if ! [[ "${!#}" =~ ^[0-9]*.[0-9]*$ ]]; then
-        echo Definição do período temporal inválida! Tem que definir um tempo máximo.\(s\).
-        exit
-    else
-        echo A validar os argumentos...
 
-        if_filter=.*
-        b=1
-        kb=0
-        mb=0
-        if_nMax=0
-        sTX=0
-        sRX=0
-        sTR=0
-        sRR=0
-        sRev=0
-        loop=0
-        while getopts "c:bkmp:trTRvl" option; do
-            case ${option} in
-            c) #For option c
-                if_filter=$OPTARG
-                ;;
-            b) #For option b
-                b=0
-                if [ ! -k ] | [ ! -m ]; then
-                    b=1
-                    exit 0
-                fi
-                ;;
-            k) #For option k
-                kb=1
-                if [ ! -m ]; then
-                    kb=0
-                    exit 0
-                fi
-                ;;
-            m) #For option m
-                mb=1
-                ;;
-            p) #For option p
-                if ! [[ "$OPTARG" =~ ^[1-9]+$ ]]; then
-                    echo "A opção -p deverá ser um inteiro maior que 0!"
-                    if_nMax=$OPTARG
-                    exit 0
-                fi
-                ;;
-            t) #For option t
-                sTX=1
-                if ! [ -r ] | [ ! -T ] | [ ! -R ]; then
-                    sTX=0
-                    exit 0
+    # Deve ser fornecido pelo menos um argumento, o período de amostragem
+    [[ $# -lt 1 ]] && throw_error 10
 
-                fi
-                ;;
-            r) #For option r
-                sRX=1
-                if [ ! -T ] | [ ! -R ]; then
-                    sRX=0
-                    exit 0
-                fi
-                ;;
-            T) #For option T
-                sTR=1
-                if [ ! -R ]; then
-                    sTR=0
-                    exit 0
-                fi
-                ;;
-            R) #For option R
-                sRR=1 ;;
-            v) #For option v
-                sRev=1 ;;
-            l) #For option l
-                loop=1 ;;
-            esac
-        done
+    # time - período de amostragem
+    for time; do :; done
+    # $time deve ser um inteiro maior que do que zero
+    ! [[ $time =~ ^0*[1-9][0-9]*$ ]] && throw_error 11 "$time"
 
-    fi
+    while getopts "c:bklmp:RrTtv" op; do
+        case ${op} in
+        c) # if_filter
 
+            # $if_filter não pode ser o último argumento (período de amostragem)
+            [[ $(($OPTIND - 1)) -eq $# ]] && throw_error 12
+            # $if_filter não pode ser uma opção do script
+            [[ $OPTARG =~ ^-[cbklmpRrTtv]$ ]] && throw_error 13 "$OPTARG"
+
+            if_filter=$OPTARG
+            ;;
+        b) # b
+            # $kb e $mb têm de ser 0
+            b=1
+            kb=0
+            mb=0
+            ;;
+        k) # kb
+            # $b e $mb têm de ser 0
+            b=0
+            kb=1
+            mb=0
+            ;;
+        l) # loop
+            loop=1
+            ;;
+        m) # mb
+            # $b e $kb têm de ser 0
+            b=0
+            kb=0
+            mb=1
+            ;;
+        p) # if_nMax
+
+            # $if_nMax não pode ser o último argumento (período de amostragem)
+            [[ $(($OPTIND - 1)) -eq $# ]] && throw_error 12
+            # $if_nMax deve ser um inteiro maior que do que zero
+            ! [[ $OPTARG =~ ^0*[1-9][0-9]*$ ]] && throw_error 14 "$OPTARG"
+
+            if_nMax=$OPTARG
+            ;;
+        R) # sRR
+            # $sTX, $sRX e $sTR têm de ser 0
+            sTX=0
+            sRX=0
+            sTR=0
+            sRR=1
+            ;;
+        r) # sRX
+            # $sTX, $sTR e $sRR têm de ser 0
+            sTX=0
+            sRX=1
+            sTR=0
+            sRR=0
+            ;;
+        T) # sTR
+            # $sTX, $sRX e sRR têm de ser 0
+            sTX=0
+            sRX=0
+            sTR=1
+            sRR=0
+            ;;
+        t) # sTX
+            # $sRX, $sTR e sRR têm de ser 0
+            sTX=1
+            sRX=0
+            sTR=0
+            sRR=0
+            ;;
+        v) # sRev
+            sRev=1
+            ;;
+        esac
+    done
+
+    return 0
 }
 
 # Recolhe e guarda em arrays os dados obtidos através do comando "ifconfig"
@@ -192,6 +197,7 @@ function print_table() {
 
     # i - itera pelas interfaces; if_n - número de interfaces impressas
     for ((i = 0, if_n = 0; i < ${#if_names[@]} && if_n < $if_nMax; i++)); do
+
         # Filtragem da interface
         ! [[ ${if_names[i]} =~ $if_filter ]] && continue || ((if_n++))
 
@@ -206,17 +212,22 @@ function print_table() {
 
 # Termina o programa com erro, imprime a causa na consola e retorna o valor de saída correspondente
 # $1 - código do erro
-# $2 - dado que causou o erro
+# $2 - dado que causou o erro (opcional)
 function throw_error() {
 
     case $1 in
     1*)
-        printf "erro de argumentos [$1]: "
+        printf "erro de argumentos [código %d]: " $1
+        [[ $1 -eq 10 ]] && printf "deve ser fornecido o período de amostragem"
+        [[ $1 -eq 11 ]] && printf "%s: período de amostragem deve ser um inteiro maior do que zero" $2
+        [[ $1 -eq 12 ]] && printf "o último argumento deve ser o período de amostragem"
+        [[ $1 -eq 13 ]] && printf "%s: filtro não pode ser uma opção do script" $2
+        [[ $1 -eq 14 ]] && printf "%s: número de interfaces deve ser um inteiro maior do que zero" $2
         ;;
     2*)
-        printf "erro de execução [$1]: "
+        printf "erro de execução [código %d]: " $1
         [[ $1 -eq 20 ]] && printf "nenhuma interface foi detetada no sistema"
-        [[ $1 -eq 21 ]] && printf "$2: o filtro fornecido não encontrou nenhuma interface válida"
+        [[ $1 -eq 21 ]] && printf "%s: filtro não encontrou nenhuma interface válida" $2
         ;;
     esac
     printf "\n"
@@ -229,32 +240,34 @@ function throw_error() {
 # ------------------------------------ #
 
 # Inicialização das variáveis com os valores por defeito
+time=0 # É argumento obrigatório do script, logo é definido na função get_args()
+
+b=1
 if_filter=".*"
 if_nMax=0 # Depende do número de interfaces, logo é definido na função get_data()
-b=1
 kb=0
+loop=0
 mb=0
 sTX=0
 sRX=0
 sTR=0
 sRR=0
 sRev=0
-loop=0
-time=0
 
 if_names=() #("eth0" "wlan" "lo")
-if_TX=() #(123456 3223 456)
-if_RX=() #(23456 904 234)
-if_TR=() #(12345.6 322.3 45.6)
-if_RR=() #(2345.6 23.4 90.4)
+if_TX=()    #(123456 3223 456)
+if_RX=()    #(23456 904 234)
+if_TR=()    #(12345.6 322.3 45.6)
+if_RR=()    #(2345.6 23.4 90.4)
 if_TXTOT=() #(123456 3223 456)
 if_RXTOT=() #(23456 904 234)
 
-get_args
+get_args $@
 
 # Fluxo de execução principal
 cycle=0
 while true; do
+
     # 1ª recolha
     get_data
     if_TX_prev=(${if_TX[@]})
