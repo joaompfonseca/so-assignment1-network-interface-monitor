@@ -130,20 +130,20 @@ function sort_data() {
     # Determina os dados a serem ordenados e a ordenação dos mesmos
     if [[ $sTX -eq 1 ]]; then
         sort_data=(${if_TX[@]}) # TX
-        sort_type="g"
+        sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sRX -eq 1 ]]; then
         sort_data=(${if_RX[@]}) # RX
-        sort_type="g"
+        sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sTR -eq 1 ]]; then
         sort_data=(${if_TR[@]}) # TRATE
-        sort_type="g"
+        sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sRR -eq 1 ]]; then
         sort_data=(${if_RR[@]}) # RRATE
-        sort_type="g"
+        sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     else
         sort_data=(${if_names[@]}) # NETIF
+        sort_type=$([[ $sRev -eq 0 ]] && echo "" || echo "r")
     fi
-    sort_type+=$([[ $sRev -eq 1 ]] && echo "" || echo "r") # Ordenação crescente ("") ou decrescente ("r")
 
     # Determina os índices dos dados ordenados
     indexes=($(printf "%s\n" "${sort_data[@]}" | nl -v0 | sort -$sort_type -k2 | cut -f1))
