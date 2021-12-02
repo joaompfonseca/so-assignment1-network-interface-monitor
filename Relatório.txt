@@ -11,7 +11,7 @@ DESCRIÇÃO:
 	Ordenação por defeito: nome da interface, alfabeticamente.
 
 OBRIGATÓRIO:
-	segundos [inteiro/float] 	: o período entre recolhas de dados.
+	segundos [inteiro]			: período de amostragem.
 	
 OPCIONAL:
 	-c [regex]					: seleção das interfaces de rede a visualizar.
@@ -64,9 +64,9 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 	Para os argumentos fornecidos ao script:
 
 		  Opção		: Nome da var.	: Tipo           : Valor por defeito	: Características
-		  ----------:---------------:----------------:----------------------:-------------------------------------------------------
-		> c 		: if_filter		: string (regex) : .*					: comprimento maior que zero
-		> p     	: if_nMax		: integer		 : todas				: número inteiro; maior que zero
+		  ----------:---------------:----------------:----------------------:------------------------------------------------------------
+		> c 		: if_filter		: string (regex) : .*					: não pode ser último argumento; não pode ser opção do script
+		> p     	: if_nMax		: integer		 : todas				: não pode ser último argumento; número inteiro maior que zero
 		> b 		: b				: boolean		 : 1					:  \
 		> k 		: kb			: boolean		 : 0					:  | são incompatíveis
 		> m 		: mb			: boolean		 : 0					:  /
@@ -76,7 +76,7 @@ que consiste na divisão do problema principal em outros mais pequenos e fáceis
 	    > R			: sRR			: boolean		 : 0					:  /
 		> v			: sRev			: boolean		 : 0					: 
 		> l			: loop			: boolean		 : 0					:
-		> segundos	: time			: integer 		 : XXXXXXXXXXXXXXXXXXXX : obrigatório; número inteiro; maior que zero
+		> segundos	: time			: integer 		 : XXXXXXXXXXXXXXXXXXXX : obrigatório; último argumento; número inteiro maior que zero
 
 	Se várias opções incompatíveis forem fornecidas, é considerada a última que aparecer na invocação do script.
 
