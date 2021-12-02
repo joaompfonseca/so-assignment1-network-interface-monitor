@@ -182,7 +182,7 @@ function print_table() {
     # Conversão dos dados de bytes para kilobytes ou megabytes, especificado nos argumentos
     conv=$(($kb * 1024 + $mb * 1024 * 1024))
     for ((i = 0; i < ${#if_names[@]}; i++)); do
-        if_TX_conv[i]=$([[ $b -eq 1 ]] && echo ${if_RX[i]} || echo ${if_TX[i]} / $conv | bc -l)
+        if_TX_conv[i]=$([[ $b -eq 1 ]] && echo ${if_TX[i]} || echo ${if_TX[i]} / $conv | bc -l)
         if_RX_conv[i]=$([[ $b -eq 1 ]] && echo ${if_RX[i]} || echo ${if_RX[i]} / $conv | bc -l)
         if_TR_conv[i]=$([[ $b -eq 1 ]] && echo ${if_TR[i]} || echo ${if_TR[i]} / $conv | bc -l)
         if_RR_conv[i]=$([[ $b -eq 1 ]] && echo ${if_RR[i]} || echo ${if_RR[i]} / $conv | bc -l)
