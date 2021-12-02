@@ -123,9 +123,9 @@ function get_data() {
 # Ordena os dados nos arrays de acordo com a ordenação escolhida
 function sort_data() {
 
-    indexes=()   # Array com os índices
-    sort_data=() # Array com os dados a serem ordenados
-    sort_type="" # Ordenação numérica geral ("g") ou alfabeticamente ("") e/ou inversa ("r")
+    indexes=()      # Array com os índices
+    sort_data=()    # Array com os dados a serem ordenados
+    sort_type=""    # Tipo de ordenação - numérica geral ("g") ou alfabeticamente ("") e/ou crescente ("") ou decrescente ("r")
 
     # Determina os dados a serem ordenados e a ordenação dos mesmos
     if [[ $sTX -eq 1 ]]; then
@@ -143,7 +143,7 @@ function sort_data() {
     else
         sort_data=(${if_names[@]}) # NETIF
     fi
-    [[ $sRev -eq 1 ]] && sort_type+="r" # Ordenação inversa
+    sort_type+=$([[ $sRev -eq 1 ]] && echo "" || echo "r") # Ordenação crescente ("") ou decrescente ("r")
 
     # Determina os índices dos dados ordenados
     indexes=($(printf "%s\n" "${sort_data[@]}" | nl -v0 | sort -$sort_type -k2 | cut -f1))
