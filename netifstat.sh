@@ -120,33 +120,33 @@ function get_data() {
     return 0
 }
 
-# Ordena os dados nos arrays de acordo com a ordenação escolhida
+# Ordena os dados dos arrays de acordo com a ordenação escolhida
 function sort_data() {
 
     indexes=()      # Array com os índices
-    sort_data=()    # Array com os dados a serem ordenados
+    sort_base=()    # Array com os dados a serem ordenados
     sort_type=""    # Tipo de ordenação - numérica geral ("g") ou alfabeticamente ("") e/ou crescente ("") ou decrescente ("r")
 
     # Determina os dados a serem ordenados e a ordenação dos mesmos
     if [[ $sTX -eq 1 ]]; then
-        sort_data=(${if_TX[@]}) # TX
+        sort_base=(${if_TX[@]}) # TX
         sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sRX -eq 1 ]]; then
-        sort_data=(${if_RX[@]}) # RX
+        sort_base=(${if_RX[@]}) # RX
         sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sTR -eq 1 ]]; then
-        sort_data=(${if_TR[@]}) # TRATE
+        sort_base=(${if_TR[@]}) # TRATE
         sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     elif [[ $sRR -eq 1 ]]; then
-        sort_data=(${if_RR[@]}) # RRATE
+        sort_base=(${if_RR[@]}) # RRATE
         sort_type=$([[ $sRev -eq 0 ]] && echo "gr" || echo "g")
     else
-        sort_data=(${if_names[@]}) # NETIF
+        sort_base=(${if_names[@]}) # NETIF
         sort_type=$([[ $sRev -eq 0 ]] && echo "" || echo "r")
     fi
 
     # Determina os índices dos dados ordenados
-    indexes=($(printf "%s\n" "${sort_data[@]}" | nl -v0 | sort -$sort_type -k2 | cut -f1))
+    indexes=($(printf "%s\n" "${sort_base[@]}" | nl -v0 | sort -$sort_type -k2 | cut -f1))
 
     # Ordena todos os arrays, utilizando arrays temporários e os índices descobertos
     if_names_copy=(${if_names[@]})
@@ -170,7 +170,7 @@ function sort_data() {
     return 0
 }
 
-# Imprime na consola a tabela formatada com os dados nos arrays
+# Imprime na consola a tabela formatada com os dados dos arrays
 function print_table() {
     # Formato do cabeçalho
     header="%-10s %8s %8s %8s %8s"
@@ -210,7 +210,7 @@ function print_table() {
     return 0
 }
 
-# Termina o programa com erro, imprime a causa na consola e retorna o valor de saída correspondente
+# Termina o programa com erro, imprime na consola a causa e retorna o valor de saída correspondente
 # $1 - código do erro
 # $2 - dado que causou o erro (opcional)
 function throw_error() {
@@ -241,31 +241,31 @@ function throw_error() {
 
 # Inicialização das variáveis com os valores por defeito
 time=0 # É argumento obrigatório do script, logo é definido na função get_args()
-
-b=1
 if_filter=".*"
 if_nMax=0 # Depende do número de interfaces, logo é definido na função get_data()
+b=1
 kb=0
-loop=0
 mb=0
 sTX=0
 sRX=0
 sTR=0
 sRR=0
 sRev=0
+loop=0
 
-if_names=() #("eth0" "wlan" "lo")
-if_TX=()    #(123456 3223 456)
-if_RX=()    #(23456 904 234)
-if_TR=()    #(12345.6 322.3 45.6)
-if_RR=()    #(2345.6 23.4 90.4)
-if_TXTOT=() #(123456 3223 456)
-if_RXTOT=() #(23456 904 234)
+cycle=0
+
+if_names=()
+if_TX=()    
+if_RX=()    
+if_TR=()   
+if_RR=()    
+if_TXTOT=() 
+if_RXTOT=() 
 
 get_args $@
 
 # Fluxo de execução principal
-cycle=0
 while true; do
 
     # 1ª recolha
