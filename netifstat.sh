@@ -263,9 +263,9 @@ if_RR=()
 if_TXTOT=() 
 if_RXTOT=() 
 
+# Fluxo de execução principal
 get_args $@
 
-# Fluxo de execução principal
 while true; do
 
     # 1ª recolha
