@@ -266,17 +266,17 @@ if_RXTOT=()
 # Fluxo de execução principal
 get_args $@
 
+# Recolha inicial
+get_data
+if_TX_prev=(${if_TX[@]})
+if_RX_prev=(${if_RX[@]})
+
 while true; do
 
-    # 1ª recolha
-    get_data
-    if_TX_prev=(${if_TX[@]})
-    if_RX_prev=(${if_RX[@]})
-
-    # Tempo entre recolhas
+    # Intervalo entre recolhas
     sleep $time
 
-    # 2ª recolha
+    # Recolha atual
     get_data
     if_TX_curr=(${if_TX[@]})
     if_RX_curr=(${if_RX[@]})
@@ -290,6 +290,10 @@ while true; do
         if_TXTOT[i]=$((${if_TXTOT[i]} + ${if_TX[i]}))
         if_RXTOT[i]=$((${if_RXTOT[i]} + ${if_RX[i]}))
     done
+
+    # Valores da recolha atual serão os valores anteriores da recolha seguinte
+    if_TX_prev=(${if_TX_curr[@]})
+    if_RX_prev=(${if_RX_curr[@]})
 
     sort_data
 
